@@ -58,7 +58,7 @@ export default function ContentTable({ month }: { month: string }) {
           <tbody>
             {sorted.slice(0,9).map((post, i) => (
               <tr key={post.id} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
-                <td className="py-3 px-3 text-sm font-bold" style={{ color: mode==='top'?'#34d399':'#f87171' }}>{mode==='top'?'↑':'↓'}{i+1}</td>
+                <td className="py-3 px-3 text-sm font-bold" style={{ color: mode==='top'?'#2E7D32':'#D92D20' }}>{mode==='top'?'↑':'↓'}{i+1}</td>
                 <td className="py-3 px-3"><span className={`text-xs font-medium px-2 py-0.5 rounded-full border ${BADGE[post.type]}`}>{post.type==='IMAGE'?'Post':post.type.charAt(0)+post.type.slice(1).toLowerCase()}</span></td>
                 <td className="py-3 px-3 max-w-[260px]">
                   <p className="text-gray-300 text-xs line-clamp-1">{post.caption}</p>

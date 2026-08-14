@@ -109,11 +109,11 @@ export default function AudiencePanel() {
         </div>
         <ResponsiveContainer width="100%" height={200}>
           <BarChart data={AGE_DATA} margin={{ top: 4, right: 4, bottom: 0, left: 0 }} layout="vertical">
-            <XAxis type="number" tick={{ fill: '#6b7280', fontSize: 10 }} tickLine={false} axisLine={false} tickFormatter={v => `${v}%`} />
-            <YAxis type="category" dataKey="age" tick={{ fill: '#9ca3af', fontSize: 11 }} tickLine={false} axisLine={false} width={40} />
+            <XAxis type="number" tick={{ fill: '#6F655C', fontSize: 10 }} tickLine={false} axisLine={false} tickFormatter={v => `${v}%`} />
+            <YAxis type="category" dataKey="age" tick={{ fill: '#8B8078', fontSize: 11 }} tickLine={false} axisLine={false} width={40} />
             <Tooltip content={<TT />} />
-            <Bar dataKey="donne"  name="Donne"  fill="#ec4899" fillOpacity={0.85} radius={[0,3,3,0]} stackId="a" />
-            <Bar dataKey="uomini" name="Uomini" fill="#60a5fa" fillOpacity={0.85} radius={[0,3,3,0]} stackId="a" />
+            <Bar dataKey="donne"  name="Donne"  fill="#FF5740" fillOpacity={0.85} radius={[0,3,3,0]} stackId="a" />
+            <Bar dataKey="uomini" name="Uomini" fill="#2F86DB" fillOpacity={0.85} radius={[0,3,3,0]} stackId="a" />
           </BarChart>
         </ResponsiveContainer>
         <div className="flex gap-4 mt-3 text-xs text-gray-500">
@@ -143,7 +143,7 @@ export default function AudiencePanel() {
                   className="h-full rounded-full"
                   style={{
                     width: `${(c.pct / 22.2) * 100}%`,
-                    background: i < 2 ? '#ec4899' : '#6b7280',
+                    background: i < 2 ? '#FF5740' : '#6F655C',
                   }}
                 />
               </div>

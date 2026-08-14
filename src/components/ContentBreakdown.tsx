@@ -2,10 +2,10 @@ import { POSTS } from '../data/mockData'
 import type { MediaType } from '../types/instagram'
 
 const CFG: Record<MediaType, { label: string; color: string; emoji: string; bg: string }> = {
-  REEL:     { label: 'Reel',     color: '#ec4899', emoji: '🎬', bg: 'bg-pink-600/15' },
-  CAROUSEL: { label: 'Carousel', color: '#34d399', emoji: '📄', bg: 'bg-emerald-600/15' },
-  IMAGE:    { label: 'Post',     color: '#60a5fa', emoji: '🖼️', bg: 'bg-blue-600/15' },
-  STORY:    { label: 'Story',    color: '#fbbf24', emoji: '⭕', bg: 'bg-amber-600/15' },
+  REEL:     { label: 'Reel',     color: '#FF5740', emoji: '🎬', bg: 'bg-pink-600/15' },
+  CAROUSEL: { label: 'Carousel', color: '#2E7D32', emoji: '📄', bg: 'bg-emerald-600/15' },
+  IMAGE:    { label: 'Post',     color: '#2F86DB', emoji: '🖼️', bg: 'bg-blue-600/15' },
+  STORY:    { label: 'Story',    color: '#D98324', emoji: '⭕', bg: 'bg-amber-600/15' },
 }
 
 export default function ContentBreakdown({ month }: { month: string }) {

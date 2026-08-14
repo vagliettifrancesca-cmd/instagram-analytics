@@ -32,11 +32,11 @@ export default function StoriesPanel({ month }: { month: string }) {
       </div>
       <ResponsiveContainer width="100%" height={130}>
         <BarChart data={monthStories.slice(0,8).map(s => ({ date: s.date.slice(5).replace('-','/'), reach: s.reach }))} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#ffffff08" />
-          <XAxis dataKey="date" tick={{ fill: '#6b7280', fontSize: 10 }} tickLine={false} axisLine={false} />
-          <YAxis tick={{ fill: '#6b7280', fontSize: 10 }} tickLine={false} axisLine={false} tickFormatter={v => `${(v/1000).toFixed(1)}K`} width={36} />
+          <CartesianGrid strokeDasharray="3 3" stroke="#1A141014" />
+          <XAxis dataKey="date" tick={{ fill: '#6F655C', fontSize: 10 }} tickLine={false} axisLine={false} />
+          <YAxis tick={{ fill: '#6F655C', fontSize: 10 }} tickLine={false} axisLine={false} tickFormatter={v => `${(v/1000).toFixed(1)}K`} width={36} />
           <Tooltip content={<TT />} />
-          <Bar dataKey="reach" fill="#ec4899" fillOpacity={0.75} radius={[3,3,0,0]} />
+          <Bar dataKey="reach" fill="#FF5740" fillOpacity={0.75} radius={[3,3,0,0]} />
         </BarChart>
       </ResponsiveContainer>
       <div className="mt-4 bg-surface-700/40 rounded-xl p-3">

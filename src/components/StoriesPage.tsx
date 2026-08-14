@@ -7,7 +7,7 @@ const TT = ({ active, payload, label }: any) => {
     <div className="bg-surface-700 border border-white/10 rounded-xl px-3 py-2 shadow-xl text-xs">
       <p className="text-gray-400 mb-1">{label}</p>
       {payload.map((p: any) => (
-        <p key={p.dataKey} style={{ color: p.fill || p.stroke || '#fff' }} className="font-semibold">
+        <p key={p.dataKey} style={{ color: p.fill || p.stroke || '#1A1410' }} className="font-semibold">
           {p.name}: {typeof p.value === 'number' && p.name?.includes('%') ? `${p.value}%` : p.value?.toLocaleString?.('it-IT') ?? p.value}
         </p>
       ))}
@@ -53,9 +53,9 @@ export default function StoriesPage({ month }: { month: string }) {
 
   // ── Distribuzione completion rate ─────────────────────────────────────────
   const crBuckets = [
-    { label: '< 75%',   n: monthStories.filter(s => s.completionRate < 75).length,  fill: '#f43f5e' },
-    { label: '75-90%',  n: monthStories.filter(s => s.completionRate >= 75 && s.completionRate < 90).length, fill: '#fbbf24' },
-    { label: '≥ 90%',   n: monthStories.filter(s => s.completionRate >= 90).length, fill: '#34d399' },
+    { label: '< 75%',   n: monthStories.filter(s => s.completionRate < 75).length,  fill: '#D92D20' },
+    { label: '75-90%',  n: monthStories.filter(s => s.completionRate >= 75 && s.completionRate < 90).length, fill: '#D98324' },
+    { label: '≥ 90%',   n: monthStories.filter(s => s.completionRate >= 90).length, fill: '#2E7D32' },
   ]
 
   return (
@@ -95,11 +95,11 @@ export default function StoriesPage({ month }: { month: string }) {
           <p className="text-xs text-gray-500 mb-4">Andamento nel mese</p>
           <ResponsiveContainer width="100%" height={170}>
             <BarChart data={reachChartData} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#ffffff08" />
-              <XAxis dataKey="label" tick={{ fill: '#6b7280', fontSize: 10 }} tickLine={false} axisLine={false} />
-              <YAxis tick={{ fill: '#6b7280', fontSize: 10 }} tickLine={false} axisLine={false} tickFormatter={v => fmtK(v)} width={36} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#1A141014" />
+              <XAxis dataKey="label" tick={{ fill: '#6F655C', fontSize: 10 }} tickLine={false} axisLine={false} />
+              <YAxis tick={{ fill: '#6F655C', fontSize: 10 }} tickLine={false} axisLine={false} tickFormatter={v => fmtK(v)} width={36} />
               <Tooltip content={<TT />} />
-              <Bar dataKey="reach" name="Reach" fill="#ec4899" fillOpacity={0.8} radius={[3, 3, 0, 0]} />
+              <Bar dataKey="reach" name="Reach" fill="#FF5740" fillOpacity={0.8} radius={[3, 3, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -110,11 +110,11 @@ export default function StoriesPage({ month }: { month: string }) {
           <p className="text-xs text-gray-500 mb-4">Quante persone hanno visto la story fino alla fine</p>
           <ResponsiveContainer width="100%" height={170}>
             <LineChart data={reachChartData} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#ffffff08" />
-              <XAxis dataKey="label" tick={{ fill: '#6b7280', fontSize: 10 }} tickLine={false} axisLine={false} />
-              <YAxis tick={{ fill: '#6b7280', fontSize: 10 }} tickLine={false} axisLine={false} domain={[0, 100]} tickFormatter={v => `${v}%`} width={38} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#1A141014" />
+              <XAxis dataKey="label" tick={{ fill: '#6F655C', fontSize: 10 }} tickLine={false} axisLine={false} />
+              <YAxis tick={{ fill: '#6F655C', fontSize: 10 }} tickLine={false} axisLine={false} domain={[0, 100]} tickFormatter={v => `${v}%`} width={38} />
               <Tooltip content={<TT />} />
-              <Line type="monotone" dataKey="cr" name="CR%" stroke="#34d399" strokeWidth={2} dot={{ fill: '#34d399', r: 3, strokeWidth: 0 }} activeDot={{ r: 5, strokeWidth: 0 }} />
+              <Line type="monotone" dataKey="cr" name="CR%" stroke="#2E7D32" strokeWidth={2} dot={{ fill: '#2E7D32', r: 3, strokeWidth: 0 }} activeDot={{ r: 5, strokeWidth: 0 }} />
             </LineChart>
           </ResponsiveContainer>
         </div>

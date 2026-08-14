@@ -92,13 +92,13 @@ export default function PerformancePage({ month }: { month: string }) {
           <p className="text-xs text-gray-500 mb-4">Valori medi per Reel e Carousel</p>
           <ResponsiveContainer width="100%" height={180}>
             <BarChart data={byType} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#ffffff08" />
-              <XAxis dataKey="name" tick={{ fill: '#9ca3af', fontSize: 11 }} tickLine={false} axisLine={false} />
-              <YAxis tick={{ fill: '#6b7280', fontSize: 10 }} tickLine={false} axisLine={false} width={38} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#1A141014" />
+              <XAxis dataKey="name" tick={{ fill: '#8B8078', fontSize: 11 }} tickLine={false} axisLine={false} />
+              <YAxis tick={{ fill: '#6F655C', fontSize: 10 }} tickLine={false} axisLine={false} width={38} />
               <Tooltip content={<TT />} />
-              <Bar dataKey="avgLikes" name="Like medi" fill="#ec4899" fillOpacity={0.8} radius={[3,3,0,0]} />
-              <Bar dataKey="avgShares" name="Condivisioni medie" fill="#34d399" fillOpacity={0.8} radius={[3,3,0,0]} />
-              <Bar dataKey="avgSaves" name="Salvataggi medi" fill="#fbbf24" fillOpacity={0.8} radius={[3,3,0,0]} />
+              <Bar dataKey="avgLikes" name="Like medi" fill="#FF5740" fillOpacity={0.8} radius={[3,3,0,0]} />
+              <Bar dataKey="avgShares" name="Condivisioni medie" fill="#2E7D32" fillOpacity={0.8} radius={[3,3,0,0]} />
+              <Bar dataKey="avgSaves" name="Salvataggi medi" fill="#D98324" fillOpacity={0.8} radius={[3,3,0,0]} />
             </BarChart>
           </ResponsiveContainer>
           <div className="flex gap-4 mt-2 text-xs text-gray-500">
@@ -115,11 +115,11 @@ export default function PerformancePage({ month }: { month: string }) {
         <p className="text-xs text-gray-500 mb-4">Reach totale account (post propri + collab + earned media)</p>
         <ResponsiveContainer width="100%" height={160}>
           <BarChart data={last4} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#ffffff08" />
-            <XAxis dataKey="label" tick={{ fill: '#9ca3af', fontSize: 11 }} tickLine={false} axisLine={false} />
-            <YAxis tick={{ fill: '#6b7280', fontSize: 10 }} tickLine={false} axisLine={false} tickFormatter={v => fmtK(v)} width={42} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#1A141014" />
+            <XAxis dataKey="label" tick={{ fill: '#8B8078', fontSize: 11 }} tickLine={false} axisLine={false} />
+            <YAxis tick={{ fill: '#6F655C', fontSize: 10 }} tickLine={false} axisLine={false} tickFormatter={v => fmtK(v)} width={42} />
             <Tooltip content={<TT />} />
-            <Bar dataKey="totalReach" name="Reach" fill="#ec4899" fillOpacity={0.75} radius={[4,4,0,0]} />
+            <Bar dataKey="totalReach" name="Reach" fill="#FF5740" fillOpacity={0.75} radius={[4,4,0,0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>

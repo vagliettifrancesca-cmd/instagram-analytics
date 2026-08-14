@@ -25,12 +25,12 @@ export function FollowerChart() {
       </div>
       <ResponsiveContainer width="100%" height={190}>
         <AreaChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
-          <defs><linearGradient id="fg" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#ec4899" stopOpacity={0.3}/><stop offset="95%" stopColor="#ec4899" stopOpacity={0}/></linearGradient></defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="#ffffff08" />
-          <XAxis dataKey="date" tick={{ fill: '#6b7280', fontSize: 10 }} tickLine={false} axisLine={false} tickFormatter={v => `${v.slice(8)}/05`} />
-          <YAxis tick={{ fill: '#6b7280', fontSize: 10 }} tickLine={false} axisLine={false} domain={['auto','auto']} tickFormatter={v => `${(v/1000).toFixed(1)}K`} width={44} />
+          <defs><linearGradient id="fg" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#FF5740" stopOpacity={0.3}/><stop offset="95%" stopColor="#FF5740" stopOpacity={0}/></linearGradient></defs>
+          <CartesianGrid strokeDasharray="3 3" stroke="#1A141014" />
+          <XAxis dataKey="date" tick={{ fill: '#6F655C', fontSize: 10 }} tickLine={false} axisLine={false} tickFormatter={v => `${v.slice(8)}/05`} />
+          <YAxis tick={{ fill: '#6F655C', fontSize: 10 }} tickLine={false} axisLine={false} domain={['auto','auto']} tickFormatter={v => `${(v/1000).toFixed(1)}K`} width={44} />
           <Tooltip content={<TT />} />
-          <Area type="monotone" dataKey="followers" name="Follower" stroke="#ec4899" strokeWidth={2} fill="url(#fg)" dot={false} activeDot={{ r: 4, fill: '#ec4899', strokeWidth: 0 }} />
+          <Area type="monotone" dataKey="followers" name="Follower" stroke="#FF5740" strokeWidth={2} fill="url(#fg)" dot={false} activeDot={{ r: 4, fill: '#FF5740', strokeWidth: 0 }} />
         </AreaChart>
       </ResponsiveContainer>
     </div>
@@ -43,13 +43,13 @@ export function ReachERChart() {
       <div className="mb-5"><p className="text-white font-semibold">Reach & Engagement Rate</p><p className="text-xs text-gray-500 mt-0.5">Ultimi 6 mesi</p></div>
       <ResponsiveContainer width="100%" height={190}>
         <ComposedChart data={MONTHLY_HISTORY} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#ffffff08" />
-          <XAxis dataKey="label" tick={{ fill: '#6b7280', fontSize: 10 }} tickLine={false} axisLine={false} />
-          <YAxis yAxisId="l" tick={{ fill: '#6b7280', fontSize: 10 }} tickLine={false} axisLine={false} tickFormatter={v => `${(v/1000).toFixed(0)}K`} width={38} />
-          <YAxis yAxisId="r" orientation="right" tick={{ fill: '#6b7280', fontSize: 10 }} tickLine={false} axisLine={false} tickFormatter={v => `${v}%`} width={32} />
+          <CartesianGrid strokeDasharray="3 3" stroke="#1A141014" />
+          <XAxis dataKey="label" tick={{ fill: '#6F655C', fontSize: 10 }} tickLine={false} axisLine={false} />
+          <YAxis yAxisId="l" tick={{ fill: '#6F655C', fontSize: 10 }} tickLine={false} axisLine={false} tickFormatter={v => `${(v/1000).toFixed(0)}K`} width={38} />
+          <YAxis yAxisId="r" orientation="right" tick={{ fill: '#6F655C', fontSize: 10 }} tickLine={false} axisLine={false} tickFormatter={v => `${v}%`} width={32} />
           <Tooltip content={<TT />} />
-          <Bar yAxisId="l" dataKey="totalReach" name="Reach" fill="#ec4899" fillOpacity={0.7} radius={[4,4,0,0]} />
-          <Line yAxisId="r" type="monotone" dataKey="avgEngagementRate" name="ER" stroke="#34d399" strokeWidth={2.5} dot={{ fill: '#34d399', r: 4, strokeWidth: 0 }} activeDot={{ r: 5, strokeWidth: 0 }} />
+          <Bar yAxisId="l" dataKey="totalReach" name="Reach" fill="#FF5740" fillOpacity={0.7} radius={[4,4,0,0]} />
+          <Line yAxisId="r" type="monotone" dataKey="avgEngagementRate" name="ER" stroke="#2E7D32" strokeWidth={2.5} dot={{ fill: '#2E7D32', r: 4, strokeWidth: 0 }} activeDot={{ r: 5, strokeWidth: 0 }} />
         </ComposedChart>
       </ResponsiveContainer>
     </div>
@@ -62,14 +62,14 @@ export function EngagementStackedChart() {
       <div className="mb-5"><p className="text-white font-semibold">Engagement mensile</p><p className="text-xs text-gray-500 mt-0.5">Like · Commenti · Salvataggi · Condivisioni</p></div>
       <ResponsiveContainer width="100%" height={200}>
         <BarChart data={MONTHLY_HISTORY} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#ffffff08" />
-          <XAxis dataKey="label" tick={{ fill: '#6b7280', fontSize: 10 }} tickLine={false} axisLine={false} />
-          <YAxis tick={{ fill: '#6b7280', fontSize: 10 }} tickLine={false} axisLine={false} tickFormatter={v => `${(v/1000).toFixed(0)}K`} width={38} />
+          <CartesianGrid strokeDasharray="3 3" stroke="#1A141014" />
+          <XAxis dataKey="label" tick={{ fill: '#6F655C', fontSize: 10 }} tickLine={false} axisLine={false} />
+          <YAxis tick={{ fill: '#6F655C', fontSize: 10 }} tickLine={false} axisLine={false} tickFormatter={v => `${(v/1000).toFixed(0)}K`} width={38} />
           <Tooltip content={<TT />} />
-          <Bar dataKey="totalLikes" name="Like" fill="#f472b6" fillOpacity={0.85} radius={[0,0,0,0]} stackId="a" />
-          <Bar dataKey="totalComments" name="Commenti" fill="#60a5fa" fillOpacity={0.85} stackId="a" />
-          <Bar dataKey="totalSaves" name="Salvataggi" fill="#34d399" fillOpacity={0.85} stackId="a" />
-          <Bar dataKey="totalShares" name="Condivisioni" fill="#fbbf24" fillOpacity={0.85} radius={[3,3,0,0]} stackId="a" />
+          <Bar dataKey="totalLikes" name="Like" fill="#FF7060" fillOpacity={0.85} radius={[0,0,0,0]} stackId="a" />
+          <Bar dataKey="totalComments" name="Commenti" fill="#2F86DB" fillOpacity={0.85} stackId="a" />
+          <Bar dataKey="totalSaves" name="Salvataggi" fill="#2E7D32" fillOpacity={0.85} stackId="a" />
+          <Bar dataKey="totalShares" name="Condivisioni" fill="#D98324" fillOpacity={0.85} radius={[3,3,0,0]} stackId="a" />
         </BarChart>
       </ResponsiveContainer>
     </div>
