@@ -31,13 +31,13 @@ export default function KPICards({ current, previous }: { current: MonthlySnapsh
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
       {cards.map(c => (
-        <div key={c.label} className={`bg-gradient-to-br ${c.accent} to-surface-800 border border-white/5 rounded-2xl p-5 flex flex-col gap-3`}>
+        <div key={c.label} className={`bg-gradient-to-br ${c.accent} to-surface-800 border border-surface-500 rounded-3xl p-5 flex flex-col gap-3 shadow-card`}>
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-400">{c.label}</span>
-            <div className="p-2 bg-white/5 rounded-xl">{c.icon}</div>
+            <span className="text-sm text-gray-400 font-medium">{c.label}</span>
+            <div className="p-2 bg-surface-700 rounded-2xl">{c.icon}</div>
           </div>
-          <div className="text-3xl font-bold text-white tracking-tight">{c.value}</div>
-          <div className="space-y-0.5">{c.delta}<span className="text-xs text-gray-500">{c.sub}</span></div>
+          <div className="text-3xl font-bold text-gray-200 tracking-tight">{c.value}</div>
+          <div className="space-y-0.5">{c.delta}<span className="text-xs text-gray-400">{c.sub}</span></div>
         </div>
       ))}
     </div>
