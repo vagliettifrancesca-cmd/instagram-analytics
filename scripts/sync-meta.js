@@ -3,13 +3,16 @@
 // mockData.ts. Eseguito dal GitHub Action il 1° di ogni mese (e a mano).
 //
 // Variabili richieste (GitHub Secrets):
-//   META_ACCESS_TOKEN  — token a lunga durata (valido ~60 gg, rigenera con meta-refresh.js)
-//   IG_USER_ID         — ID account Instagram Business (es. 17841457894854297)
+//   META_ACCESS_TOKEN  — token a lunga durata
+//   IG_USER_ID         — ID account Instagram Business
 // ════════════════════════════════════════════════════════════════════════
 
-const https = require('https');
-const fs    = require('fs');
-const path  = require('path');
+import https from 'https';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const V     = 'v21.0';
 const TOKEN = process.env.META_ACCESS_TOKEN;
@@ -17,7 +20,6 @@ const IG_ID = process.env.IG_USER_ID;
 
 if (!TOKEN || !IG_ID) {
   console.error('❌  META_ACCESS_TOKEN e IG_USER_ID sono richiesti come variabili d\'ambiente.');
-  console.error('    Localmente: META_ACCESS_TOKEN=... IG_USER_ID=... node scripts/sync-meta.js');
   process.exit(1);
 }
 
@@ -52,8 +54,8 @@ function prevMonth() {
   return {
     since:  Math.floor(start.getTime() / 1000),
     until:  Math.floor(end.getTime()   / 1000),
-    key:    start.toISOString().slice(0, 7),          // es. "2026-08"
-    label:  `${MESI[start.getMonth()]} ${String(start.getFullYear()).slice(2)}`, // es. "Ago 26"
+    key:    start.toISOString().slice(0, 7),
+    label:  `${MESI[start.getMonth()]} ${String(start.getFullYear()).slice(2)}`,
   };
 }
 
@@ -66,8 +68,7 @@ async function fetchMedia(since, until) {
     const data = await api(endpoint);
     if (data.data) all.push(...data.data);
     if (data.paging?.next) {
-      // next è un URL completo — estraiamo solo il path+query senza il token
-      const url  = new URL(data.paging.next);
+      const url = new URL(data.paging.next);
       url.searchParams.delete('access_token');
       endpoint = url.pathname + '?' + url.searchParams.toString();
     } else {
@@ -90,7 +91,7 @@ async function fetchInsights(mediaId, mediaType) {
   }
 }
 
-// ── insight account (reach/impression mensili) ────────────────────────────
+// ── insight account mensili ────────────────────────────────────────────
 async function fetchAccountInsights(since, until) {
   try {
     const data = await api(`/${IG_ID}/insights?metric=reach,impressions&period=month&since=${since}&until=${until}`);
@@ -127,7 +128,6 @@ async function main() {
   const { since, until, key, label } = prevMonth();
   console.log(`\n📅 Sincronizzazione: ${label} (${key})\n`);
 
-  // 1. Media del mese
   console.log('📸 Recupero post...');
   const media = await fetchMedia(since, until);
   console.log(`   ${media.length} post trovati`);
@@ -137,9 +137,8 @@ async function main() {
     return;
   }
 
-  // 2. Insights per ogni post
   const posts = [];
-  let nextId  = 600; // offset id per i nuovi post (evita collisioni)
+  let nextId  = 600;
 
   for (const m of media) {
     const day = m.timestamp.slice(0, 10);
@@ -156,27 +155,20 @@ async function main() {
     const er       = reach > 0 ? Math.round(((likes + comments + shares + saves) / reach) * 1000) / 10 : 0;
 
     posts.push({
-      id:               nextId++,
-      type:             toTSType(m.media_type),
-      date:             day,
-      caption:          escapeStr(m.caption || ''),
-      reach,
-      impressions:      ins.impressions || null,
+      id: nextId++, type: toTSType(m.media_type), date: day,
+      caption: escapeStr(m.caption || ''),
+      reach, impressions: ins.impressions || null,
       likes, comments, shares, saves,
-      views,
-      avgWatchTimeSec:  watchMs ? Math.round(watchMs / 1000) : null,
-      engagementRate:   er,
-      isCollaboration:  isCollab(m.caption),
+      views, avgWatchTimeSec: watchMs ? Math.round(watchMs / 1000) : null,
+      engagementRate: er, isCollaboration: isCollab(m.caption),
     });
   }
 
-  // 3. Insight account e follower
   console.log('\n📊 Insight account...');
-  const acct        = await fetchAccountInsights(since, until);
-  const followersEnd = await fetchFollowers();
+  const acct             = await fetchAccountInsights(since, until);
+  const followersEnd     = await fetchFollowers();
   const totalReach       = acct.reach       || posts.reduce((s, p) => s + p.reach, 0);
   const totalImpressions = acct.impressions  || 0;
-
   const totalLikes    = posts.reduce((s, p) => s + p.likes,    0);
   const totalComments = posts.reduce((s, p) => s + p.comments, 0);
   const totalShares   = posts.reduce((s, p) => s + p.shares,   0);
@@ -187,7 +179,6 @@ async function main() {
     ? Math.round(posts.reduce((s, p) => s + p.engagementRate, 0) / posts.length * 10) / 10
     : 0;
 
-  // 4. Genera il codice TypeScript
   const postsBlock = posts.map(p => `  {
     id: ${p.id}, type: '${p.type}', date: '${p.date}',
     caption: '${p.caption.slice(0, 150)}',
@@ -200,25 +191,21 @@ async function main() {
 
   const monthlyLine = `  { month: '${key}', label: '${label}', followersEnd: ${followersEnd}, followersGained: 0, followersLost: 0, totalReach: ${totalReach}, totalImpressions: ${totalImpressions}, avgEngagementRate: ${avgER}, postsPublished: ${posts.length}, reelsPublished: ${reelsCount}, storiesPublished: 0, carouselsPublished: ${carouselCount}, totalLikes: ${totalLikes}, totalComments: ${totalComments}, totalShares: ${totalShares}, totalSaves: ${totalSaves} },`;
 
-  // 5. Aggiorna mockData.ts
   const mockPath = path.join(__dirname, '..', 'src', 'data', 'mockData.ts');
   let src = fs.readFileSync(mockPath, 'utf-8');
 
   if (src.includes(`month: '${key}'`)) {
-    console.log(`\n⚠️  Mese ${key} già presente — skip. Nessuna modifica.`);
+    console.log(`\n⚠️  Mese ${key} già presente — skip.`);
     return;
   }
 
   console.log('\n📝 Aggiornamento mockData.ts...');
 
-  // Inserisce i post prima del commento "// ── Storico mensile"
   src = src.replace(
     /(\n\]\n\n\/\/ ── Storico mensile)/,
     `,\n  // ── ${key} – post da API Meta ──────────────────────────────────────────\n${postsBlock}\n]$1`
   );
 
-  // Inserisce la riga mensile prima della ] finale di MONTHLY_HISTORY
-  // Ancora: ultima riga che ha format "  { month: '20xx-xx', ..."
   src = src.replace(
     /(  \{ month: '\d{4}-\d{2}'[^\n]+\},?\n\](\n\n\/\/ Follower))/,
     match => match.replace(/\](\n\n\/\/ Follower)/, `\n${monthlyLine}\n]$1`)
@@ -228,11 +215,10 @@ async function main() {
 
   console.log(`\n✅ mockData.ts aggiornato — ${key}`);
   console.log(`   Post: ${posts.length} | Reach: ${totalReach.toLocaleString('it-IT')} | Follower: ${followersEnd.toLocaleString('it-IT')}`);
-  console.log('\n📌 Da aggiornare manualmente (non disponibili via API storica):');
+  console.log('\n📌 Da aggiornare manualmente:');
   console.log('   • Stories (solo ultime 24h via API)');
   console.log('   • Dati demografici (CSV Meta Business Suite)');
-  console.log('   • followersGained / followersLost (non accessibili via API base)');
-  console.log('   • AUTO_INSIGHTS (analisi qualitativa)');
+  console.log('   • followersGained / followersLost');
 }
 
 main().catch(e => {
