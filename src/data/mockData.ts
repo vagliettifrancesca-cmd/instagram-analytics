@@ -600,7 +600,81 @@ export const STORIES: Story[] = [
   { id: 328, date: '2026-07-27', caption: '', reach: 580, impressions: 718, exits: 0, replies: 0, tapsForward: 669, tapsBack: 0, linkClicks: null, completionRate: Math.round(580/718*1000)/10 },
   { id: 329, date: '2026-07-28', caption: 'Ciao Deeve 🧡 Vi teniamo aggiornatə e stiamo lavorando per tornare da voi il prima possibile 🙏🏻', reach: 835, impressions: 1064, exits: 0, replies: 0, tapsForward: 909, tapsBack: 0, linkClicks: null, completionRate: Math.round(835/1064*1000)/10 },
   { id: 330, date: '2026-07-29', caption: "In un settore al femminile, quanto è importante favorire l'imprenditorialità? 🧡", reach: 499, impressions: 616, exits: 0, replies: 0, tapsForward: 527, tapsBack: 0, linkClicks: 8, completionRate: Math.round(499/616*1000)/10 },
-  { id: 331, date: '2026-07-30', caption: '🧡 Ciao Deeve✨ Finalmente il nostro numero Whatsapp è stato sbloccato 🩷', reach: 623, impressions: 778, exits: 0, replies: 0, tapsForward: 645, tapsBack: 0, linkClicks: null, completionRate: Math.round(623/778*1000)/10 },
+  { id: 331, date: '2026-07-30', caption: '🧡 Ciao Deeve✨ Finalmente il nostro numero Whatsapp è stato sbloccato 🩷', reach: 623, impressions: 778, exits: 0, replies: 0, tapsForward: 645, tapsBack: 0, linkClicks: null, completionRate: Math.round(623/778*1000)/10 },,
+  // ── 2026-08 – post da API Meta ──────────────────────────────────────────
+  {
+    id: 600, type: 'CAROUSEL', date: '2026-08-28',
+    caption: '🎀 Kinda Chic scegliere Deeva',
+    topic: 'brand',
+    reach: 0, impressions: null, likes: 12, comments: 0, shares: 0, saves: 0,
+    views: null, avgWatchTimeSec: null,
+    engagementRate: 0,
+    isCollaboration: false,
+  },
+  {
+    id: 601, type: 'REEL', date: '2026-08-25',
+    caption: 'Team Deeva, summer edition🌞\n\nTra lavoro, call, risate e qualche momento off: un recap di come abbiamo vissuto l’estate🪭\n\nE adesso? Si riparte. N',
+    topic: 'brand',
+    reach: 0, impressions: null, likes: 25, comments: 0, shares: 0, saves: 0,
+    views: null, avgWatchTimeSec: null,
+    engagementRate: 0,
+    isCollaboration: false,
+  },
+  {
+    id: 602, type: 'REEL', date: '2026-08-22',
+    caption: 'Deeva è pensato per tutte quelle volte in cui vorresti prenderti cura di te ma il tempo sembra non bastare mai💆‍♀️\n\nUn momento beauty direttamente ',
+    topic: 'brand',
+    reach: 0, impressions: null, likes: 14, comments: 0, shares: 0, saves: 0,
+    views: null, avgWatchTimeSec: null,
+    engagementRate: 0,
+    isCollaboration: false,
+  },
+  {
+    id: 603, type: 'REEL', date: '2026-08-18',
+    caption: 'Un’ora, full glam✨\n\nUn’ora è tutto ciò che ti serve per sentirti pronta e impeccabile💅\n\nHair, make-up, nails, tutti i tuoi servizi beauty, in un ',
+    topic: 'brand',
+    reach: 0, impressions: null, likes: 12, comments: 0, shares: 0, saves: 0,
+    views: null, avgWatchTimeSec: null,
+    engagementRate: 0,
+    isCollaboration: false,
+  },
+  {
+    id: 604, type: 'CAROUSEL', date: '2026-08-13',
+    caption: 'Sale, sole e sabbia insieme disidratano, sbiadiscono il colore e lasciano le lunghezze ruvide. Ma non serve rinunciare a niente: bastano quattro gesti',
+    topic: 'brand',
+    reach: 0, impressions: null, likes: 9, comments: 0, shares: 0, saves: 0,
+    views: null, avgWatchTimeSec: null,
+    engagementRate: 0,
+    isCollaboration: false,
+  },
+  {
+    id: 605, type: 'REEL', date: '2026-08-11',
+    caption: 'Il giorno prima delle ferie? Valigie da chiudere, mille cose da fare e una sola missione: essere pronte a partire🌞\n\nCon Deeva, anche la preparazion',
+    topic: 'brand',
+    reach: 0, impressions: null, likes: 20, comments: 0, shares: 0, saves: 0,
+    views: null, avgWatchTimeSec: null,
+    engagementRate: 0,
+    isCollaboration: false,
+  },
+  {
+    id: 606, type: 'CAROUSEL', date: '2026-08-05',
+    caption: '🌞 Come sopravvivere ai 35 gradi senza soffrire il caldo:\n\nTre raccolti che si fanno in cinque minuti e reggono tutto il giorno, che tu sia in spiag',
+    topic: 'brand',
+    reach: 0, impressions: null, likes: 8, comments: 0, shares: 0, saves: 0,
+    views: null, avgWatchTimeSec: null,
+    engagementRate: 0,
+    isCollaboration: false,
+  },
+  {
+    id: 607, type: 'REEL', date: '2026-08-03',
+    caption: 'Ogni giorno il tuo corpo compie un piccolo miracolo🤍\n\nAnche quando il caldo si fa sentire, meritarti un momento tutto per te non è un lusso, ma un ',
+    topic: 'brand',
+    reach: 0, impressions: null, likes: 92, comments: 21, shares: 0, saves: 0,
+    views: null, avgWatchTimeSec: null,
+    engagementRate: 0,
+    isCollaboration: false,
+  }
+]
 ]
 
 // ── Storico mensile (precedenti mesi = stime calibrate su scala reale, mag 2026 = reale) ─
@@ -622,6 +696,8 @@ export const MONTHLY_HISTORY: MonthlySnapshot[] = [
   // Follower: +1.203 nuovi · -111 smesso di seguire · netto +1.092 · totale al 24 giu: ~15.466
   { month: '2026-06', label: 'Giu 26', followersEnd: 15466, followersGained: 1203, followersLost: 111, totalReach: 450796, totalImpressions: 1700000, avgEngagementRate: 1.5, postsPublished: 11, reelsPublished: 10, storiesPublished: 49, carouselsPublished: 1, totalLikes: 1425, totalComments: 47, totalShares: 282, totalSaves: 8 },
   { month: '2026-07', label: 'Lug 26', followersEnd: 16011, followersGained: 669, followersLost: 124, totalReach: 360953, totalImpressions: 1478301, avgEngagementRate: 1.0, postsPublished: 11, reelsPublished: 8, storiesPublished: 31, carouselsPublished: 3, totalLikes: 1108, totalComments: 55, totalShares: 87, totalSaves: 12 },
+
+  { month: '2026-08', label: 'Ago 26', followersEnd: 17089, followersGained: 0, followersLost: 0, totalReach: 0, totalImpressions: 0, avgEngagementRate: 0, postsPublished: 8, reelsPublished: 5, storiesPublished: 0, carouselsPublished: 3, totalLikes: 192, totalComments: 21, totalShares: 0, totalSaves: 0 },
 ]
 
 // Follower giornalieri maggio 2026 — start 13.453 (30 apr) → end 14.374 (28 mag) · +921 netto reale
