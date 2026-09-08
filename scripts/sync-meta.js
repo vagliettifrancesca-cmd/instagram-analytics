@@ -123,6 +123,33 @@ function escapeStr(s = '') {
   return s.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n');
 }
 
+// ── inserimento nel file dei dati ─────────────────────────────────────────
+// Aggiunge `elementi` in fondo all'array che precede `dichiarazioneSuccessiva`.
+//
+// Ci si ancora a ciò che viene DOPO, non a un commento vicino: la prima
+// versione cercava il commento "// ── Storico mensile" e finiva per scrivere i
+// post dentro STORIES invece che dentro POSTS, perché quel commento sta dopo
+// entrambi gli array. Il nome della dichiarazione successiva, invece, è unico.
+function inCodaAllArrayCheStaPrimaDi(testoFile, dichiarazioneSuccessiva, elementi) {
+  const dopo = testoFile.indexOf(dichiarazioneSuccessiva);
+  if (dopo === -1) {
+    throw new Error(`Non trovo "${dichiarazioneSuccessiva}" in mockData.ts: il file è cambiato, aggiorna lo script.`);
+  }
+
+  // l'ultima parentesi di chiusura a inizio riga prima di quella dichiarazione
+  const chiusura = testoFile.lastIndexOf('\n]\n', dopo);
+  if (chiusura === -1) {
+    throw new Error(`Non trovo la chiusura dell'array prima di "${dichiarazioneSuccessiva}".`);
+  }
+
+  const prima = testoFile.slice(0, chiusura);
+  // l'ultimo elemento può già avere la virgola: aggiungerne un'altra creerebbe
+  // un buco nell'array (`},,` = un elemento `undefined`) e il tipo salterebbe
+  const virgola = prima.trimEnd().endsWith(',') ? '' : ',';
+
+  return prima + virgola + '\n' + elementi + testoFile.slice(chiusura);
+}
+
 // ── main ──────────────────────────────────────────────────────────────────
 async function main() {
   const { since, until, key, label } = prevMonth();
@@ -179,6 +206,16 @@ async function main() {
     ? Math.round(posts.reduce((s, p) => s + p.engagementRate, 0) / posts.length * 10) / 10
     : 0;
 
+  // Like e commenti arrivano dall'oggetto media; reach, salvataggi e condivisioni
+  // solo dagli insight. Se sono tutti a zero l'API ha rifiutato gli insight:
+  // quasi sempre al token manca il permesso `instagram_manage_insights`.
+  if (posts.length && posts.every(p => p.reach === 0)) {
+    console.warn('\n⚠️  ATTENZIONE: reach a zero su TUTTI i post.');
+    console.warn('    Gli insight sono stati rifiutati da Meta (di solito errore #10).');
+    console.warn('    Il token va rigenerato aggiungendo il permesso `instagram_manage_insights`.');
+    console.warn('    Like, commenti e follower qui sopra sono comunque reali.\n');
+  }
+
   const postsBlock = posts.map(p => `  {
     id: ${p.id}, type: '${p.type}', date: '${p.date}',
     caption: '${p.caption.slice(0, 150)}',
@@ -201,15 +238,22 @@ async function main() {
 
   console.log('\n📝 Aggiornamento mockData.ts...');
 
-  src = src.replace(
-    /(\n\]\n\n\/\/ ── Storico mensile)/,
-    `,\n  // ── ${key} – post da API Meta ──────────────────────────────────────────\n${postsBlock}\n]$1`
-  );
+  const chiusurePrima = (src.match(/^\]$/gm) || []).length;
 
-  src = src.replace(
-    /(  \{ month: '\d{4}-\d{2}'[^\n]+\},?\n\](\n\n\/\/ Follower))/,
-    match => match.replace(/\](\n\n\/\/ Follower)/, `\n${monthlyLine}\n]$1`)
+  src = inCodaAllArrayCheStaPrimaDi(
+    src,
+    'export const STORIES',
+    `  // ── ${key} – post da API Meta ──────────────────────────────────────────\n${postsBlock}`
   );
+  src = inCodaAllArrayCheStaPrimaDi(src, 'export const FOLLOWER_DAILY', monthlyLine);
+
+  // Se il numero di parentesi di chiusura è cambiato ne abbiamo aggiunta o persa
+  // una: il file non compila, Vercel fallisce il build in silenzio e continua a
+  // servire la versione vecchia. Meglio fermarsi qui che pubblicare un file rotto.
+  const chiusureDopo = (src.match(/^\]$/gm) || []).length;
+  if (chiusureDopo !== chiusurePrima) {
+    throw new Error(`mockData.ts non è bilanciato: ${chiusurePrima} "]" prima, ${chiusureDopo} dopo. Non scrivo il file.`);
+  }
 
   fs.writeFileSync(mockPath, src, 'utf-8');
 
