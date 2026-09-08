@@ -71,7 +71,7 @@ export default function ReportPage({ month, current, previous }: Props) {
           </div>
           <div className="text-right">
             <p className="text-gray-600 text-xs">Generato il</p>
-            <p className="text-gray-400 text-sm font-medium">28/05/2026</p>
+            <p className="text-gray-400 text-sm font-medium">{new Date().toLocaleDateString('it-IT')}</p>
           </div>
         </div>
       </div>

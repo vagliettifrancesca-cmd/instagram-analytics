@@ -3,6 +3,24 @@ import { STORIES } from '../data/mockData'
 
 export default function StoriesPanel({ month }: { month: string }) {
   const monthStories = STORIES.filter(s => s.date.startsWith(month))
+
+  // Le stories NON arrivano dall'API: Meta espone solo le ultime 24 ore, quindi
+  // ogni mese scaricato in automatico ne ha zero. Senza questo controllo `top`
+  // qui sotto sarebbe undefined e l'intera dashboard smetterebbe di disegnarsi
+  // (schermata bianca), non solo questo riquadro.
+  if (monthStories.length === 0) {
+    return (
+      <div className="bg-surface-800 border border-surface-500 rounded-3xl p-8 text-center shadow-card">
+        <p className="text-3xl mb-2">📭</p>
+        <p className="text-gray-200 font-semibold">Nessuna story per {month.replace('-', '/')}</p>
+        <p className="text-gray-400 text-sm mt-1 max-w-md mx-auto">
+          Le stories vanno caricate a mano dal CSV di Business Suite: l'API di Meta
+          espone solo le ultime 24 ore.
+        </p>
+      </div>
+    )
+  }
+
   const avgReach = Math.round(monthStories.reduce((a, s) => a + s.reach, 0) / monthStories.length)
   const avgCompletion = Math.round(monthStories.reduce((a, s) => a + s.completionRate, 0) / monthStories.length * 10) / 10
   const totalReplies = monthStories.reduce((a, s) => a + s.replies, 0)
