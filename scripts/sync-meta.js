@@ -1,10 +1,14 @@
 // ════════════════════════════════════════════════════════════════════════
-// sync-meta.js — scarica i dati Instagram del mese precedente e aggiorna
-// mockData.ts. Eseguito dal GitHub Action il 1° di ogni mese (e a mano).
+// sync-meta.js — scarica i dati Instagram di un mese e aggiorna mockData.ts.
+// Eseguito dal GitHub Action il 1° di ogni mese, o a mano.
 //
 // Variabili richieste (GitHub Secrets):
-//   META_ACCESS_TOKEN  — token a lunga durata
+//   META_ACCESS_TOKEN  — token Pagina a lunga durata, con instagram_manage_insights
 //   IG_USER_ID         — ID account Instagram Business
+//
+// Opzionali, per rilanciare un mese passato:
+//   MESE=2026-08       — sincronizza quel mese invece del precedente
+//   SOVRASCRIVI=1      — cancella i dati già presenti di quel mese e li rifà
 // ════════════════════════════════════════════════════════════════════════
 
 import https from 'https';
@@ -19,9 +23,11 @@ const TOKEN = process.env.META_ACCESS_TOKEN;
 const IG_ID = process.env.IG_USER_ID;
 
 if (!TOKEN || !IG_ID) {
-  console.error('❌  META_ACCESS_TOKEN e IG_USER_ID sono richiesti come variabili d\'ambiente.');
+  console.error("❌  META_ACCESS_TOKEN e IG_USER_ID sono richiesti come variabili d'ambiente.");
   process.exit(1);
 }
+
+const GIORNO = 86400;
 
 // ── helpers HTTP ──────────────────────────────────────────────────────────
 function httpGet(url) {
@@ -45,64 +51,100 @@ function api(endpoint) {
   return httpGet(`https://graph.facebook.com/${V}${endpoint}${sep}access_token=${TOKEN}`);
 }
 
-// ── calcolo mese precedente ───────────────────────────────────────────────
-function prevMonth() {
-  const now   = new Date();
-  const start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-  const end   = new Date(now.getFullYear(), now.getMonth(), 1);
-  const MESI  = ['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
+// ── quale mese sincronizzare ──────────────────────────────────────────────
+function meseDaSincronizzare() {
+  const MESI = ['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
+  const forzato = (process.env.MESE || '').trim();
+
+  let anno, mese;
+  if (/^\d{4}-\d{2}$/.test(forzato)) {
+    anno = Number(forzato.slice(0, 4));
+    mese = Number(forzato.slice(5, 7)) - 1;
+  } else {
+    const ora = new Date();
+    anno = ora.getFullYear();
+    mese = ora.getMonth() - 1;   // con mese -1 il costruttore torna a dicembre dell'anno prima
+  }
+
+  const inizio = new Date(anno, mese, 1);
+  const fine   = new Date(anno, mese + 1, 1);
   return {
-    since:  Math.floor(start.getTime() / 1000),
-    until:  Math.floor(end.getTime()   / 1000),
-    key:    start.toISOString().slice(0, 7),
-    label:  `${MESI[start.getMonth()]} ${String(start.getFullYear()).slice(2)}`,
+    since: Math.floor(inizio.getTime() / 1000),
+    until: Math.floor(fine.getTime()   / 1000),
+    key:   `${inizio.getFullYear()}-${String(inizio.getMonth() + 1).padStart(2, '0')}`,
+    label: `${MESI[inizio.getMonth()]} ${String(inizio.getFullYear()).slice(2)}`,
   };
 }
 
-// ── fetch lista media del mese ────────────────────────────────────────────
+// ── lista dei contenuti del mese ──────────────────────────────────────────
 async function fetchMedia(since, until) {
-  const fields = 'id,caption,media_type,timestamp,like_count,comments_count,permalink';
-  let endpoint = `/${IG_ID}/media?fields=${fields}&since=${since}&until=${until}&limit=50`;
-  const all = [];
+  const campi = 'id,caption,media_type,timestamp,like_count,comments_count,permalink';
+  let endpoint = `/${IG_ID}/media?fields=${campi}&since=${since}&until=${until}&limit=50`;
+  const tutti = [];
   while (endpoint) {
     const data = await api(endpoint);
-    if (data.data) all.push(...data.data);
+    if (data.data) tutti.push(...data.data);
     if (data.paging?.next) {
       const url = new URL(data.paging.next);
       url.searchParams.delete('access_token');
-      endpoint = url.pathname + '?' + url.searchParams.toString();
+      endpoint = url.pathname.replace(`/${V}`, '') + '?' + url.searchParams.toString();
     } else {
       endpoint = null;
     }
   }
-  return all;
+  return tutti;
 }
 
-// ── insight per singolo post/reel ─────────────────────────────────────────
+// ── statistiche del singolo contenuto ─────────────────────────────────────
+// `impressions` e `video_views` sono state dismesse da Meta: chiederle fa
+// fallire TUTTA la chiamata, e ogni valore torna a zero. La metrica che le
+// sostituisce entrambe è `views`.
 async function fetchInsights(mediaId, mediaType) {
-  const isVideo = ['REEL', 'VIDEO'].includes(mediaType);
-  const metrics = ['reach', 'impressions', 'saved', 'shares', ...(isVideo ? ['video_views', 'ig_reels_avg_watch_time'] : [])].join(',');
+  const video   = ['REEL', 'VIDEO'].includes(mediaType);
+  const metriche = ['reach', 'saved', 'shares', 'views', ...(video ? ['ig_reels_avg_watch_time'] : [])].join(',');
   try {
-    const data = await api(`/${mediaId}/insights?metric=${metrics}`);
+    const data = await api(`/${mediaId}/insights?metric=${metriche}`);
     return Object.fromEntries((data.data || []).map(i => [i.name, i.values?.[0]?.value ?? i.value ?? 0]));
   } catch (e) {
-    console.warn(`    ⚠ insight non disponibili per ${mediaId}: ${e.message}`);
+    console.warn(`    ⚠ statistiche non disponibili per ${mediaId}: ${e.message}`);
     return {};
   }
 }
 
-// ── insight account mensili ────────────────────────────────────────────
-async function fetchAccountInsights(since, until) {
+// ── copertura UNICA del mese ──────────────────────────────────────────────
+// period=days_28 dà le persone diverse raggiunte nelle 28 giornate precedenti.
+// Sommare invece la copertura giorno per giorno conterebbe più volte la stessa
+// persona e gonfierebbe il dato di 2-3 volte: agosto sarebbe uscito 956.294
+// contro i 360.953 di luglio, un +165% che non è mai successo.
+async function reachUnico(fineMese) {
   try {
-    const data = await api(`/${IG_ID}/insights?metric=reach,impressions&period=month&since=${since}&until=${until}`);
-    return Object.fromEntries((data.data || []).map(i => [i.name, i.values?.[0]?.value ?? 0]));
+    const r = await api(`/${IG_ID}/insights?metric=reach&period=days_28&since=${fineMese - GIORNO * 2}&until=${fineMese}`);
+    const valori = r.data?.[0]?.values || [];
+    return valori.length ? (valori[valori.length - 1].value || 0) : 0;
   } catch (e) {
-    console.warn('  ⚠ insight account non disponibili:', e.message);
-    return {};
+    console.warn('  ⚠ copertura del mese non disponibile:', e.message);
+    return 0;
   }
 }
 
-// ── follower attuali ──────────────────────────────────────────────────────
+// ── visualizzazioni totali del mese ───────────────────────────────────────
+// Meta rifiuta finestre superiori a 30 giorni, quindi il mese va spezzato.
+async function viewsTotali(since, until) {
+  const BLOCCO = GIORNO * 29;
+  let totale = 0;
+  try {
+    for (let da = since; da < until; da += BLOCCO) {
+      const a = Math.min(da + BLOCCO, until);
+      const r = await api(`/${IG_ID}/insights?metric=views&period=day&metric_type=total_value&since=${da}&until=${a}`);
+      totale += r.data?.[0]?.total_value?.value || 0;
+    }
+    return totale;
+  } catch (e) {
+    console.warn('  ⚠ visualizzazioni del mese non disponibili:', e.message);
+    return 0;
+  }
+}
+
 async function fetchFollowers() {
   const data = await api(`/${IG_ID}?fields=followers_count`);
   return data.followers_count || 0;
@@ -136,7 +178,6 @@ function inCodaAllArrayCheStaPrimaDi(testoFile, dichiarazioneSuccessiva, element
     throw new Error(`Non trovo "${dichiarazioneSuccessiva}" in mockData.ts: il file è cambiato, aggiorna lo script.`);
   }
 
-  // l'ultima parentesi di chiusura a inizio riga prima di quella dichiarazione
   const chiusura = testoFile.lastIndexOf('\n]\n', dopo);
   if (chiusura === -1) {
     throw new Error(`Non trovo la chiusura dell'array prima di "${dichiarazioneSuccessiva}".`);
@@ -150,52 +191,82 @@ function inCodaAllArrayCheStaPrimaDi(testoFile, dichiarazioneSuccessiva, element
   return prima + virgola + '\n' + elementi + testoFile.slice(chiusura);
 }
 
+// ── rimozione di un mese già scritto (per SOVRASCRIVI=1) ──────────────────
+function rimuoviMese(testoFile, key) {
+  const righe = testoFile.split('\n');
+  const tenute = [];
+  let dentroIlBlocco = false;
+
+  for (const riga of righe) {
+    if (riga.includes(`// ── ${key} – post da API Meta`)) { dentroIlBlocco = true; continue; }
+    if (dentroIlBlocco) {
+      // il blocco finisce alla chiusura dell'array o all'inizio del mese dopo
+      if (riga === ']' || /\/\/ ── \d{4}-\d{2} – post da API Meta/.test(riga)) dentroIlBlocco = false;
+      else continue;
+    }
+    if (riga.includes(`{ month: '${key}'`)) continue;
+    tenute.push(riga);
+  }
+  return tenute.join('\n');
+}
+
 // ── main ──────────────────────────────────────────────────────────────────
 async function main() {
-  const { since, until, key, label } = prevMonth();
-  console.log(`\n📅 Sincronizzazione: ${label} (${key})\n`);
+  const { since, until, key, label } = meseDaSincronizzare();
+  const sovrascrivi = process.env.SOVRASCRIVI === '1';
 
-  console.log('📸 Recupero post...');
+  console.log(`\n📅 Sincronizzazione: ${label} (${key})${sovrascrivi ? ' — SOVRASCRITTURA' : ''}\n`);
+
+  console.log('📸 Recupero i contenuti...');
   const media = await fetchMedia(since, until);
-  console.log(`   ${media.length} post trovati`);
+  console.log(`   ${media.length} contenuti trovati`);
 
   if (media.length === 0) {
-    console.log('   Nessun post da aggiungere.');
+    console.log('   Nessun contenuto da aggiungere.');
     return;
   }
 
   const posts = [];
-  let nextId  = 600;
+  let prossimoId = 600;
 
   for (const m of media) {
-    const day = m.timestamp.slice(0, 10);
-    console.log(`   → ${day} [${m.media_type}] ${(m.caption || '').slice(0, 50).replace(/\n/g, ' ')}…`);
+    const giorno = m.timestamp.slice(0, 10);
+    console.log(`   → ${giorno} [${m.media_type}] ${(m.caption || '').slice(0, 45).replace(/\n/g, ' ')}…`);
     const ins = await fetchInsights(m.id, m.media_type);
 
-    const likes    = m.like_count     || 0;
-    const comments = m.comments_count || 0;
-    const shares   = ins.shares       || 0;
-    const saves    = ins.saved        || 0;
-    const reach    = ins.reach        || 0;
-    const views    = ins.video_views  || null;
-    const watchMs  = ins.ig_reels_avg_watch_time || null;
-    const er       = reach > 0 ? Math.round(((likes + comments + shares + saves) / reach) * 1000) / 10 : 0;
+    const video     = ['REEL', 'VIDEO'].includes(m.media_type);
+    const likes     = m.like_count     || 0;
+    const commenti  = m.comments_count || 0;
+    const shares    = ins.shares       || 0;
+    const salvataggi = ins.saved       || 0;
+    const reach     = ins.reach        || 0;
+    const views     = ins.views ?? null;
+    const watchMs   = ins.ig_reels_avg_watch_time || null;
+    const er        = reach > 0
+      ? Math.round(((likes + commenti + shares + salvataggi) / reach) * 1000) / 10
+      : 0;
 
     posts.push({
-      id: nextId++, type: toTSType(m.media_type), date: day,
+      id: prossimoId++, type: toTSType(m.media_type), date: giorno,
       caption: escapeStr(m.caption || ''),
-      reach, impressions: ins.impressions || null,
-      likes, comments, shares, saves,
-      views, avgWatchTimeSec: watchMs ? Math.round(watchMs / 1000) : null,
-      engagementRate: er, isCollaboration: isCollab(m.caption),
+      reach,
+      // Meta ha unito impressioni e visualizzazioni in `views`: le teniamo su
+      // un campo solo per non mostrare due colonne con lo stesso numero
+      impressions: video ? null : views,
+      likes, comments: commenti, shares, saves: salvataggi,
+      views: video ? views : null,
+      avgWatchTimeSec: watchMs ? Math.round(watchMs / 1000) : null,
+      engagementRate: er,
+      isCollaboration: isCollab(m.caption),
     });
   }
 
-  console.log('\n📊 Insight account...');
-  const acct             = await fetchAccountInsights(since, until);
+  console.log('\n📊 Statistiche del profilo...');
+  const totalReach       = await reachUnico(until);
+  const totalImpressions = await viewsTotali(since, until);
   const followersEnd     = await fetchFollowers();
-  const totalReach       = acct.reach       || posts.reduce((s, p) => s + p.reach, 0);
-  const totalImpressions = acct.impressions  || 0;
+  console.log(`   copertura unica: ${totalReach.toLocaleString('it-IT')} · visualizzazioni: ${totalImpressions.toLocaleString('it-IT')} · follower: ${followersEnd.toLocaleString('it-IT')}`);
+
   const totalLikes    = posts.reduce((s, p) => s + p.likes,    0);
   const totalComments = posts.reduce((s, p) => s + p.comments, 0);
   const totalShares   = posts.reduce((s, p) => s + p.shares,   0);
@@ -206,12 +277,12 @@ async function main() {
     ? Math.round(posts.reduce((s, p) => s + p.engagementRate, 0) / posts.length * 10) / 10
     : 0;
 
-  // Like e commenti arrivano dall'oggetto media; reach, salvataggi e condivisioni
-  // solo dagli insight. Se sono tutti a zero l'API ha rifiutato gli insight:
-  // quasi sempre al token manca il permesso `instagram_manage_insights`.
-  if (posts.length && posts.every(p => p.reach === 0)) {
-    console.warn('\n⚠️  ATTENZIONE: reach a zero su TUTTI i post.');
-    console.warn('    Gli insight sono stati rifiutati da Meta (di solito errore #10).');
+  // Like e commenti arrivano insieme al contenuto; copertura, salvataggi e
+  // condivisioni solo dalle statistiche. Se la copertura è zero ovunque, Meta
+  // le ha rifiutate: quasi sempre manca `instagram_manage_insights` al token.
+  if (posts.every(p => p.reach === 0)) {
+    console.warn('\n⚠️  ATTENZIONE: copertura a zero su TUTTI i contenuti.');
+    console.warn('    Meta ha rifiutato le statistiche (di solito errore #10).');
     console.warn('    Il token va rigenerato aggiungendo il permesso `instagram_manage_insights`.');
     console.warn('    Like, commenti e follower qui sopra sono comunque reali.\n');
   }
@@ -232,8 +303,13 @@ async function main() {
   let src = fs.readFileSync(mockPath, 'utf-8');
 
   if (src.includes(`month: '${key}'`)) {
-    console.log(`\n⚠️  Mese ${key} già presente — skip.`);
-    return;
+    if (!sovrascrivi) {
+      console.log(`\n⚠️  Il mese ${key} è già presente — non tocco niente.`);
+      console.log('    Per rifarlo:  SOVRASCRIVI=1 MESE=' + key + ' node scripts/sync-meta.js');
+      return;
+    }
+    console.log(`\n🧹 Rimuovo i dati già presenti di ${key}...`);
+    src = rimuoviMese(src, key);
   }
 
   console.log('\n📝 Aggiornamento mockData.ts...');
@@ -258,11 +334,12 @@ async function main() {
   fs.writeFileSync(mockPath, src, 'utf-8');
 
   console.log(`\n✅ mockData.ts aggiornato — ${key}`);
-  console.log(`   Post: ${posts.length} | Reach: ${totalReach.toLocaleString('it-IT')} | Follower: ${followersEnd.toLocaleString('it-IT')}`);
-  console.log('\n📌 Da aggiornare manualmente:');
-  console.log('   • Stories (solo ultime 24h via API)');
-  console.log('   • Dati demografici (CSV Meta Business Suite)');
-  console.log('   • followersGained / followersLost');
+  console.log(`   ${posts.length} contenuti · copertura ${totalReach.toLocaleString('it-IT')} · engagement medio ${avgER}%`);
+  console.log('\n📌 Restano da aggiornare a mano (non disponibili via API):');
+  console.log('   • Stories (l\'API espone solo le ultime 24 ore)');
+  console.log('   • Dati demografici (CSV da Meta Business Suite)');
+  console.log('   • Follower acquisiti e persi (non esposti dall\'API)');
+  console.log('   • AUTO_INSIGHTS (analisi qualitativa)');
 }
 
 main().catch(e => {
