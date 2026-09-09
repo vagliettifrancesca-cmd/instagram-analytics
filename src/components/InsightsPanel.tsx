@@ -28,16 +28,46 @@ function Card({ i }: { i: AutoInsight }) {
   )
 }
 
-export default function InsightsPanel() {
+function nomeMese(month: string) {
+  const [anno, mese] = month.split('-')
+  const nome = new Date(Number(anno), Number(mese) - 1, 1)
+    .toLocaleDateString('it-IT', { month: 'long' })
+  return `${nome.charAt(0).toUpperCase()}${nome.slice(1)} ${anno}`
+}
+
+export default function InsightsPanel({ month }: { month: string }) {
+  // Prima il pannello non riceveva il mese e mostrava sempre TUTTI gli insight:
+  // scegliendo agosto si continuavano a leggere i commenti di luglio.
+  const insights = AUTO_INSIGHTS.filter(i => i.month === month)
+
   return (
-    <div className="bg-surface-800 border border-white/5 rounded-2xl p-5">
+    <div className="bg-surface-800 border border-surface-500 rounded-3xl p-5 shadow-card">
       <div className="flex items-center justify-between mb-5">
-        <div><p className="text-white font-semibold">Insight Automatici</p><p className="text-xs text-gray-500 mt-0.5">Analisi Aprile 2026 · Deeva</p></div>
-        <span className="text-xs text-pink-400 bg-pink-400/10 px-3 py-1 rounded-full font-medium">{AUTO_INSIGHTS.length} insight</span>
+        <div>
+          <p className="text-gray-200 font-semibold">Analisi del mese</p>
+          <p className="text-xs text-gray-400 mt-0.5">{nomeMese(month)} · lettura redazionale, scritta a mano</p>
+        </div>
+        {insights.length > 0 && (
+          <span className="text-xs text-pink-500 bg-pink-900 px-3 py-1 rounded-full font-semibold">
+            {insights.length} {insights.length === 1 ? 'osservazione' : 'osservazioni'}
+          </span>
+        )}
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {AUTO_INSIGHTS.map(i => <Card key={i.id} i={i} />)}
-      </div>
+
+      {insights.length === 0 ? (
+        <div className="text-center py-8">
+          <p className="text-3xl mb-2">✍️</p>
+          <p className="text-gray-200 font-semibold">Nessuna analisi per {nomeMese(month)}</p>
+          <p className="text-gray-400 text-sm mt-1 max-w-md mx-auto">
+            Queste osservazioni non sono calcolate dai dati: vanno scritte a mano
+            leggendo l'andamento del mese.
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {insights.map(i => <Card key={i.id} i={i} />)}
+        </div>
+      )}
     </div>
   )
 }

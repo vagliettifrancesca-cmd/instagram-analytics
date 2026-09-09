@@ -58,6 +58,9 @@ export interface MonthlySnapshot {
 
 export interface AutoInsight {
   id: string
+  /** mese a cui si riferisce, formato '2026-08'. Senza questo campo il pannello
+   *  mostrava gli stessi commenti su qualunque mese selezionato. */
+  month: string
   category: 'top' | 'warning' | 'trend' | 'opportunity' | 'recommendation'
   icon: string
   title: string

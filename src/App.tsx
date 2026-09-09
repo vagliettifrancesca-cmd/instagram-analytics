@@ -43,7 +43,7 @@ export default function App() {
               <StoriesPanel month={month} />
               <ContentTable month={month} />
               <AudiencePanel />
-              <InsightsPanel />
+              <InsightsPanel month={month} />
             </>
           )}
           {page === 'performance' && <PerformancePage month={month} />}
