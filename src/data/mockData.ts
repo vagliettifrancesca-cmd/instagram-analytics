@@ -510,6 +510,79 @@ export const POSTS: Post[] = [
     views: 4076, avgWatchTimeSec: 10,
     engagementRate: 4.2,
     isCollaboration: false,
+  },
+  // ── 2026-09 – post da API Meta ──────────────────────────────────────────
+  {
+    id: 600, type: 'CAROUSEL', date: '2026-09-25',
+    caption: 'Milano Fashion Week 2026✨\n\nPer qualche giorno Milano diventa la capitale della bellezza. Tra passerelle, backstage e street style, ogni look raccont',
+    topic: 'brand',
+    reach: 683, impressions: 1599, likes: 15, comments: 0, shares: 6, saves: 3,
+    views: null, avgWatchTimeSec: null,
+    engagementRate: 3.5,
+    isCollaboration: false,
+  },
+  {
+    id: 601, type: 'REEL', date: '2026-09-21',
+    caption: '🇮🇹 48 ore a Londra, un bagaglio pieno di nuove idee e tanta voglia di continuare a crescere✨\n\nSiamo volati a Londra per confrontarci con chi ci is',
+    topic: 'brand',
+    reach: 1316, impressions: null, likes: 58, comments: 2, shares: 2, saves: 0,
+    views: 1948, avgWatchTimeSec: 11,
+    engagementRate: 4.7,
+    isCollaboration: false,
+  },
+  {
+    id: 602, type: 'REEL', date: '2026-09-14',
+    caption: 'Cambio look il giorno del tuo matrimonio✨\n\nTu lo faresti?\n\nCredit a @itssamandwendy e @vicmontanari 🤍',
+    topic: 'brand',
+    reach: 1932, impressions: null, likes: 29, comments: 1, shares: 1, saves: 0,
+    views: 2642, avgWatchTimeSec: 9,
+    engagementRate: 1.6,
+    isCollaboration: false,
+  },
+  {
+    id: 603, type: 'CAROUSEL', date: '2026-09-11',
+    caption: '@valentinacabassi non si è tagliata i capelli ma per tre sere al festival del cinema di Venezia ci ha regalato una bellissima anteprima: i suoi capell',
+    topic: 'brand',
+    reach: 9878, impressions: 16094, likes: 40, comments: 0, shares: 2, saves: 6,
+    views: null, avgWatchTimeSec: null,
+    engagementRate: 0.5,
+    isCollaboration: false,
+  },
+  {
+    id: 604, type: 'CAROUSEL', date: '2026-09-10',
+    caption: '💅 Con l\'arrivo di settembre e del primo fresco è arrivato ufficialmente il momento di parlare delle tendenze nails della stagione: nuance calde, ton',
+    topic: 'brand',
+    reach: 15003, impressions: 22827, likes: 120, comments: 1, shares: 55, saves: 76,
+    views: null, avgWatchTimeSec: null,
+    engagementRate: 1.7,
+    isCollaboration: false,
+  },
+  {
+    id: 605, type: 'REEL', date: '2026-09-08',
+    caption: '🌞 Lo sappiamo, il rientro dalle ferie è sempre faticoso ma ci sono dei modi per renderlo migliore: un nuovo taglio di capelli, una piega o il make-up',
+    topic: 'brand',
+    reach: 1011, impressions: null, likes: 22, comments: 0, shares: 0, saves: 2,
+    views: 1279, avgWatchTimeSec: 6,
+    engagementRate: 2.4,
+    isCollaboration: false,
+  },
+  {
+    id: 606, type: 'REEL', date: '2026-09-04',
+    caption: 'Il tuo beauty look, tutto in un unico posto✨\n\nCon Deeva puoi affidarti ad un team professionale per hair styling e make-up, scegliendo il look che p',
+    topic: 'brand',
+    reach: 1011, impressions: null, likes: 15, comments: 0, shares: 1, saves: 1,
+    views: 1335, avgWatchTimeSec: 7,
+    engagementRate: 1.7,
+    isCollaboration: false,
+  },
+  {
+    id: 607, type: 'REEL', date: '2026-09-01',
+    caption: 'Il lusso di sentirsi bene, nel luogo più intimo: casa✨\n\nLe Carte Regalo Deeva trasformano un gesto in un’esperienza: una coccola esclusiva da regala',
+    topic: 'brand',
+    reach: 982, impressions: null, likes: 14, comments: 0, shares: 0, saves: 0,
+    views: 1191, avgWatchTimeSec: 7,
+    engagementRate: 1.4,
+    isCollaboration: false,
   }
 ]
 
@@ -697,6 +770,7 @@ export const MONTHLY_HISTORY: MonthlySnapshot[] = [
   { month: '2026-07', label: 'Lug 26', followersEnd: 16011, followersGained: 669, followersLost: 124, totalReach: 360953, totalImpressions: 1478301, avgEngagementRate: 1.0, postsPublished: 11, reelsPublished: 8, storiesPublished: 31, carouselsPublished: 3, totalLikes: 1108, totalComments: 55, totalShares: 87, totalSaves: 12 },
 
   { month: '2026-08', label: 'Ago 26', followersEnd: 17212, followersGained: 0, followersLost: 0, totalReach: 321618, totalImpressions: 1743542, avgEngagementRate: 1.6, postsPublished: 8, reelsPublished: 5, storiesPublished: 0, carouselsPublished: 3, totalLikes: 196, totalComments: 21, totalShares: 16, totalSaves: 11 },
+  { month: '2026-09', label: 'Set 26', followersEnd: 17590, followersGained: 0, followersLost: 0, totalReach: 319900, totalImpressions: 1485963, avgEngagementRate: 2.2, postsPublished: 8, reelsPublished: 5, storiesPublished: 0, carouselsPublished: 3, totalLikes: 313, totalComments: 4, totalShares: 67, totalSaves: 88 },
 ]
 
 // Follower giornalieri maggio 2026 — start 13.453 (30 apr) → end 14.374 (28 mag) · +921 netto reale
@@ -804,5 +878,42 @@ export const AUTO_INSIGHTS: AutoInsight[] = [
     title: 'I salvataggi sono quasi a zero: manca il contenuto da consultare',
     body: 'Agosto chiude con 11 salvataggi in tutto il mese, e due caroselli su tre non ne hanno ricevuto nessuno. Il salvataggio è il segnale che un contenuto "servirà dopo": lo generano guide, routine passo-passo, liste di prodotti. Finché i contenuti restano racconti da guardare una volta, quel numero non si muove.',
     metric: '11 salvataggi in tutto il mese \u00b7 0 su due caroselli',
+  },
+  // ── Settembre 2026 ─────────────────────────────────────────────────────
+  {
+    id: 's1', month: '2026-09', category: 'top', icon: '🏆',
+    title: 'Il carosello del 10 settembre regge metà del mese',
+    body: 'Il carosello sulle unghie di inizio settembre ha raggiunto 15.003 persone: da solo vale quasi metà della copertura di tutti i contenuti del mese. Ha raccolto 120 like, 55 condivisioni e 76 salvataggi, cioè l\'86% dei salvataggi di settembre. Il suo engagement rate (1,7%) sembra modesto solo perché il pubblico raggiunto è enorme: in valore assoluto non c\'è paragone.',
+    metric: '15.003 copertura · 76 salvataggi · 55 condivisioni',
+  },
+  {
+    id: 's2', month: '2026-09', category: 'top', icon: '🔖',
+    title: 'Salvataggi e condivisioni esplodono: il consiglio di agosto ha funzionato',
+    body: 'I salvataggi passano da 11 ad agosto a 88 a settembre, le condivisioni da 16 a 67. Ad agosto avevamo osservato che mancavano contenuti "da consultare dopo": i due caroselli pratici di settembre hanno fatto esattamente quello. È la conferma che il formato guida-da-tenere genera un tipo di reazione che i contenuti da guardare una volta non producono.',
+    metric: 'salvataggi 11 → 88 · condivisioni 16 → 67',
+  },
+  {
+    id: 's3', month: '2026-09', category: 'trend', icon: '📄',
+    title: 'I caroselli si ribaltano rispetto ad agosto',
+    body: 'Ad agosto nessun carosello superava l\'1% di engagement e li avevamo indicati come il formato debole. A settembre i due contenuti più visti del mese sono entrambi caroselli (15.003 e 9.878 di copertura) e la copertura complessiva dei post propri passa da 12.338 a 31.816, cioè più che raddoppiata. Non era il formato a non funzionare: erano quei contenuti.',
+    metric: 'copertura dei post 12.338 → 31.816 (+158%)',
+  },
+  {
+    id: 's4', month: '2026-09', category: 'warning', icon: '💬',
+    title: 'I commenti spariscono: 4 in tutto il mese',
+    body: 'Settembre chiude con 4 commenti contro i 21 di agosto, e cinque contenuti su otto non ne hanno ricevuto nemmeno uno. Il pubblico salva e condivide molto di più di prima, ma non parla. Sono due gesti diversi: salvare è utilità privata, commentare è relazione. La seconda, in questo momento, non sta succedendo.',
+    metric: '4 commenti su 8 contenuti (agosto: 21)',
+  },
+  {
+    id: 's5', month: '2026-09', category: 'opportunity', icon: '🎬',
+    title: 'Il racconto dietro le quinte ha il miglior engagement',
+    body: '"48 ore a Londra" ha il tasso di engagement più alto del mese (4,7%) e il tempo di visione più lungo (11 secondi), pur avendo raggiunto solo 1.316 persone. Chi lo ha visto è rimasto. È un contenuto di racconto, non di servizio: vale la pena dargli più spazio, perché oggi la copertura che riceve non è proporzionata a quanto piace.',
+    metric: '4,7% engagement · 11s di visione · 1.316 copertura',
+  },
+  {
+    id: 's6', month: '2026-09', category: 'warning', icon: '📊',
+    title: 'La copertura del profilo resta ferma nonostante i post vadano meglio',
+    body: 'I contenuti organici hanno più che raddoppiato la loro copertura, ma quella complessiva del profilo è praticamente identica ad agosto (319.900 contro 321.618) e le visualizzazioni calano del 15%. Significa che il totale è mosso soprattutto da altro, verosimilmente le sponsorizzate: un buon mese organico non basta a spostarlo. Per capirlo davvero servirebbe affiancare i dati dell\'account pubblicitario.',
+    metric: 'copertura profilo 321.618 → 319.900 · visualizzazioni -15%',
   },
 ]
